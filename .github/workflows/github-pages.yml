@@ -1,0 +1,6 @@
+name: Build and deploy Jekyll site to GitHub pages
+
+on:
+  push:
+    branches:
+      - main
