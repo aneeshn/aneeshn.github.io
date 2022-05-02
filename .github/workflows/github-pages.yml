@@ -1,4 +1,4 @@
-name: Build and deploy Jekyll site to GitHub pages
+name: Build and deploy Jekyll site to GitHub Pages
 
 on:
   push:
@@ -14,8 +14,9 @@ jobs:
         with:
           path: vendor/bundle
           key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile') }}
-          restore-keys: | 
+          restore-keys: |
             ${{ runner.os }}-gems-
       - uses: helaili/jekyll-action@2.0.5
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token:  ${{ secrets.GITHUB_TOKEN }}
+          target_branch: 'gh-pages'
