@@ -83,14 +83,43 @@ For those of you who remember what an [expectation](https://www.probabilitycours
 If you are wondering why we are taking the expectation of the reward instead of the immediate reward itself, it is because life is uncertain. So, for each action, we calculate the average of all possible rewards, weighted by the likelihood of achieving them. From the example above, for the state $$s_5$$ taking the action $$\downarrow$$ results in an average reward of 8.9.
 
 ### Policy
-When the agent takes a series of actions in states, following a sequence of actions in a state is known as a policy. A function that can generate the action to take in a state is known as a policy function.
+When the agent takes a series of actions in states, it is said to be the behavior of the agent. Following a sequence of actions $$a \in A$$ starting from a state $$s \in S$$ is known as a policy. A function that can generate the action to take in a state is known as a policy function $$\pi$$. A policy function can be broken down as:
+- Deterministic $$\pi(s)$$ $$\rightarrow$$ will give you an action to take in any state s. 
+- Stochastic $$\pi(a\vert s) = \Bbb P_{\pi}(a\vert s)$$ $$\rightarrow$$ will give you probabilities over all the actions.
 
 ### Utility Function
-The drawback of only having a reward function, it simply captures the immediate short-term consequences of executing a policy. What if we want to learn the consequences of executing a policy over a longer term?
+The drawback of only having a reward function, it simply captures the immediate short-term consequences of executing a policy. What if we want to learn the consequences of executing a policy over a longer-term? When taking an action $$a$$ in state $$s$$ the immediate reward $$r$$ for that action is summed with the long-term rewards over the rest of the agent's lifetime. 
+
+If the agent naively moves from one state to another, taking random actions in every state it is in, it will eventually land up in the goal state causing it to end its "turn". When the agent does this it has generated a sequence of states and actions, known as a **trajectory**. 
+
+What if we would like to know if there are specific trajectories that are more important than others? In order to do this, we need a way to "score" these trajectories. If we sum up all the rewards we get from each state until the trajectory ends then that should be good enough right? What if this sequence is really long? We should not assign credit from a state far into the sequence to impact the score of the trajectory. We should probably give more weight to the rewards closer to the beginning of the sequence than further back. I am trying not to go into further detail, I encourage the reader to do some research into why this is the case. So, we define a cumulative reward function as 
+
+$$G = \sum^T_{t=0}\gamma^t R(s_t, a_t)$$
+
+The discount factor $$\gamma \in (0, 1]$$ tries to reduce the impact of rewards in the future compared to the ones at the beginning of the trajectory. There are a couple of reasons for this namely:
+- rewards in the future do not indicate if it benefits the agent in the present
+- rewards in the future contain a lot more uncertainty
+
+Now that we know how to assign cumulative rewards, we now need to ask how can we use that to assign a utility to a state? The answer is the **state-value function** which is expressed in the form of an expectation
+
+$$V_{\pi}(s) = \Bbb E_{\pi}[G \vert s]$$
+
+We can also extend the state-value function to include the action, this is known as the **action-value** function expressed as
+
+$$Q_{\pi}(s, a) = \Bbb E_{\pi}[G \vert s, a]$$
+
+There is an interesting relationship between the action-value function and the state-value function. If we sum all the expectation over all the actions in a state then we can collapse the action-value function to the state-value function:
+
+$$V_{\pi}(s) = \sum_{a \in A} Q_{\pi}(s,a) \pi(a\vert s)$$
+
+In literature, there is another utility function known as the **advantage function**. This function attempts to point out how much better the action $$a$$ taken in state $$s$$ relative to the average of all the actions in the state(assuming you are following a policy $$\pi$$). This is denoted as 
+
+$$A(s, a) = Q_{\pi}(s,a) - V_{\pi}(s)$$
+
 
 ### Markov Decision Process
 For this post I am interested in using Reinforcement Learning (RL) to solve this domain. Lets use the Markov Decision Process (MDP) framework to solve the RL problem. An MDP can be written as a tuple:
-$$M = <S, A, P(s'| s, a), R(s, a)>$$
+$$M = <S, A, P(s'\vert s, a), R(s, a)>$$
 where 
 
 - a set of States $$s ∈ S$$
@@ -98,28 +127,9 @@ where
 - an action dependent state transition probablity function $$P(s'\vert s, a)$$
 - a reward function $$R(s, a) \rightarrow ℝ$$
 
-If the agent naively moves from one state to another, taking random actions in every state it is in, it will eventually land up in the goal state causing for it to end its "turn". When the agent does this it has generated a sequence of states and actions, this known as a **trajectory**. 
 
-What if we would like to know if there are specific trajectories that are more important than others? In order to do this we need a way to "score" these trajectories. If we sum up all the reward we get from each state until the trajectory ends then that should be good enough right? What if this sequence is really long? We should not assign credit from a state far into the sequence to impact the score of the trajectory. We should probably give more weight to the rewards closer to the beginning to the sequence than further back. I am trying not to go into further detail, I encourage the reader to do some research into why this is the case. So, we define a cumulative reward function as 
-
-$$G = \sum^T_{t=0}\gamma^t R(s_t, a_t)$$
-
-In order to solve an MDP we need to find an optimal policy function $$π(s) -> A$$ which provides the optimal action to take for a given state. At this point I would like to hightlight I am strictly talking about a determnisitc domain. The goal state $$s8$$ is not going to change for the agent until it solves the domain. We need this policy to keep providing an action $$a$$ that can maximise our expectation of getting the highest cumulative reward. This is expressed as
+In order to solve an MDP, we need to find an optimal policy function $$π(s) \rightarrow A$$ which provides the optimal action to take for a given state. At this point, I would like to highlight I am strictly talking about a deterministic domain. The goal state $$s_8$$ is not going to change for the agent until it solves the domain. We need this policy to keep providing an action $$a$$ that can maximize our expectation of getting the highest cumulative reward. This is expressed as
 
 $$E_{p(s_1:T, a_1:T)}[\sum^T_{t=0} \gamma^t R(s_t, a_t)|\pi] $$
 
-In order to achieve this we use the Bellman equations for **state value function** and **action value function**. To find an optimal policy the following equations need to be solved
-
-$$\pi(s) = arg\max_{a} \{R(s,a) + \gamma \sum_{s'} P(s' | s, a)V(s') \}$$
-
-$$V^*(s) = \max_{a} \{R(s,a) + \gamma \sum_{s'} P(s' | s, \pi(s))V^*(s') \}$$
-
-here $$V*(s)$$ is the optimal state value function. This can be used to derive the optimal action value function as
-
-$$Q^*(s,a) = \gamma \sum_{s'} P(s' | s, a)V^*(s') \}$$
-
-which can be written out by expanding $$V^*(s) $$ as:
-
-$$Q^*(s,a) = \gamma \sum_{s'} P(s' | s, a)V^*(s') \}$$
-
-In this blog post we will not go into further details of how these Bellman equations were derived nor how they can be solved.
+In order to achieve this, we use the Bellman equations for the state-value function and the action-value function. In this blog post, we will not go into further details about how these Bellman equations were derived nor how they can be solved. In the next post, we will cover more details regarding the Bellman equations and how to solve them.
