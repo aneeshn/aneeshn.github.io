@@ -24,14 +24,14 @@ In this post, I am going to briefly introduce Reinforcement Learning (RL). This 
     style="display: block; 
            margin-left: auto;
            margin-right: auto;
-           width: 60%;"
+           width: 70%;"
     src="/assets/agentworld.png" 
     alt="Simple Grid world"/>
 <figurecaption style="display: block; 
            margin-left: auto;
            margin-right:auto;
            text-align: center;
-           font-size: 12px;">Fig 1: Agent taking an action to learn and behave intelligently</figurecaption>
+           font-size: 14px;">Fig 1: Agent taking an action to learn and behave intelligently</figurecaption>
 </figure>
 
 Picture a simple $$3 \times 3$$ grid world and in this grid world an agent can only move in the cardinal directions: $$\uparrow up, \downarrow down, \leftarrow left$$, and $$\rightarrow right$$. There is only one **goal state** the agent needs to reach, by reaching this goal state the agent has achieved its objective. The agent is interacting with the **grid world**, this is also known as the **environment**. This environment has 9 **states**, starting from $$S_0, S_1, ..., S_8$$. When the agent takes an **action**, for example, let's assume the agent takes the action **down** in the state $$S_5$$, this will move the agent to state $$S_8$$. When the agent reaches state $$S_8$$ it will receive some **reward** $$r$$. This behavior of the environment is known as the **model** of the environment. The model defines the reward and state transition probability. In this case, we are aware of this model, but in many realistic scenarios, we may not know how the model performs.
@@ -41,14 +41,14 @@ Picture a simple $$3 \times 3$$ grid world and in this grid world an agent can o
     style="display: block; 
            margin-left: auto;
            margin-right: auto;
-           width: 40%;"
+           width: 60%;"
     src="/assets/gridworld.png" 
     alt="Simple Grid world"/>
 <figurecaption style="display: block; 
            margin-left: auto;
            margin-right:auto;
            text-align: center;
-           font-size: 12px;">Fig 2: Simple Grid World</figurecaption>
+           font-size: 14px;">Fig 2: Simple Grid World</figurecaption>
 </figure>
 
 Having a model allows us to search and plan to solve the problem. One can use classical search and planning algorithms to solve this. I am interested in using RL to solve this domain. RL can deal with complex and unstructured observations, have some robustness to stochastic environments and not rely on hand-crafted models and optimizations.
@@ -118,7 +118,7 @@ here $$V*(s)$$ is the optimal state value function. This can be used to derive t
 
 $$Q^*(s,a) = \gamma \sum_{s'} P(s' | s, a)V^*(s') \}$$
 
-which can be written out by expandin $$V^*(s) $$ as:
+which can be written out by expanding $$V^*(s) $$ as:
 
 $$Q^*(s,a) = \gamma \sum_{s'} P(s' | s, a)V^*(s') \}$$
 
